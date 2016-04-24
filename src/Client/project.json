@@ -1,0 +1,16 @@
+{
+  "authors": [ "Niklas" ],
+  "dependencies": {
+    "Microsoft.AspNet.WebApi.Client": "5.2.3",
+    "Microsoft.Net.Http": "2.2.22"
+  },
+  "description": "Client Class Library",
+  "frameworks": {
+    "dnx451": { },
+    "net45":  { } 
+  },
+  "licenseUrl": "",
+  "projectUrl": "",
+  "tags": [ "" ],
+  "version": "1.0.0-*"
+}

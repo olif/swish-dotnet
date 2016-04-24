@@ -1,0 +1,91 @@
+﻿using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+
+namespace Client
+{
+    /// <summary>
+    /// Swish client
+    /// </summary>
+    public class SwishClient
+    {
+        private readonly HttpClient _client;
+
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <param name="configuration">The client configuration</param>
+        /// <param name="cert">The client certificate</param>
+        /// <param name="caCert">Optional CA root certificate used to verify server certificate</param>
+        public SwishClient(IConfiguration configuration, X509Certificate2 cert, X509Certificate2 caCert = null)
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
+            var handler = new WebRequestHandler();
+
+            handler.ClientCertificates.Add(cert);
+
+            if (caCert != null)
+            {
+                SetupServerCertificateValidation(handler, caCert);
+            }
+
+            _client = new HttpClient(handler) {BaseAddress = configuration.BaseUri()};
+        }
+
+        public SwishClient(X509Certificate2 cert, X509Certificate2 caCert = null)
+            :this(new ProductionConfig(), cert, caCert)
+        { }
+
+        public SwishClient(HttpClient httpClient)
+        {
+            _client = httpClient;
+        }
+
+        public void MakePayment(Payment payment)
+        {
+            var response = Post(payment).Result;
+            var responseContent = response.Content.ReadAsStringAsync().Result;
+            if (response.StatusCode == (HttpStatusCode)422)
+            {
+                throw new SwishException(responseContent);
+            }
+
+            response.EnsureSuccessStatusCode();
+        }
+
+        private Task<HttpResponseMessage> Post<T>(T model)
+        {
+            var json = JsonConvert.SerializeObject(model, new JsonSerializerSettings()
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
+
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = _client.PostAsync("swish-cpcapi/api/v1/paymentrequests/", content);
+
+            return response;
+        }
+
+        private static void SetupServerCertificateValidation(WebRequestHandler handler, X509Certificate2 caCert)
+        {
+            handler.ServerCertificateValidationCallback =
+                (sender, certificate, chain, errors) =>
+                {
+                    var x509ChainElement = chain.ChainElements.OfType<X509ChainElement>().LastOrDefault();
+                    if (x509ChainElement != null)
+                    {
+                        var c = x509ChainElement.Certificate;
+                        return c.Equals(caCert);
+                    }
+
+                    return false;
+                };
+        }
+    }
+}

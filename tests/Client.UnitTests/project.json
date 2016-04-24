@@ -1,0 +1,23 @@
+{
+  "authors": [ "Niklas" ],
+  "dependencies": {
+    "Client": "1.0.0-*",
+    "Microsoft.AspNet.WebApi.Client": "5.2.3",
+    "NSubstitute": "1.10.0",
+    "xunit": "2.2.0-beta1-build3239",
+    "xunit.runner.dnx": "2.1.0-rc1-build204"
+  },
+  "description": "Client.UnitTests Class Library",
+  "frameworks": {
+    "dnx451": {
+
+    }
+  },
+  "commands": {
+    "test":  "xunit.runner.dnx" 
+  },
+  "licenseUrl": "",
+  "projectUrl": "",
+  "tags": [ "" ],
+  "version": "1.0.0-*"
+}
