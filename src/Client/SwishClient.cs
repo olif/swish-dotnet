@@ -16,6 +16,8 @@ namespace Client
     public class SwishClient
     {
         private readonly HttpClient _client;
+        private const string PaymentPath = "swish-cpcapi/api/v1/paymentrequests/";
+        private const string RefundPath = "swish-cpcapi/api/v1/refundequests/";
 
         /// <summary>
         /// Default constructor
@@ -55,7 +57,7 @@ namespace Client
 
         public async Task MakePaymentAsync(PaymentModel payment)
         {
-            var response = await Post(payment);
+            var response = await Post(payment, PaymentPath);
             var responseContent = await response.Content.ReadAsStringAsync();
             if (response.StatusCode == (HttpStatusCode)422)
             {
@@ -65,7 +67,19 @@ namespace Client
             response.EnsureSuccessStatusCode();
         }
 
-        private Task<HttpResponseMessage> Post<T>(T model)
+        public async Task MakeRefundAsync(RefundModel refund)
+        {
+            var response = await Post(refund, RefundPath);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            if (response.StatusCode == (HttpStatusCode) 422)
+            {
+                throw new SwishException(responseContent);
+            }
+
+            response.EnsureSuccessStatusCode();
+        }
+
+        private Task<HttpResponseMessage> Post<T>(T model, string path)
         {
             var json = JsonConvert.SerializeObject(model, new JsonSerializerSettings()
             {
@@ -73,7 +87,7 @@ namespace Client
             });
 
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = _client.PostAsync("swish-cpcapi/api/v1/paymentrequests/", content);
+            var response = _client.PostAsync(path, content);
 
             return response;
         }
