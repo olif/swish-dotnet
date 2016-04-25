@@ -22,12 +22,13 @@ namespace Client
         /// </summary>
         /// <param name="configuration">The client configuration</param>
         /// <param name="cert">The client certificate</param>
-        /// <param name="caCert">Optional CA root certificate used to verify server certificate</param>
+        /// <param name="caCert">Optional CA root certificate used to verify server certificate, if not provided, no server certificate validation will be done</param>
         public SwishClient(IConfiguration configuration, X509Certificate2 cert, X509Certificate2 caCert = null)
         {
+            // Only TLS 1.1 works
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
-            var handler = new WebRequestHandler();
 
+            var handler = new WebRequestHandler();
             handler.ClientCertificates.Add(cert);
 
             if (caCert != null)
@@ -38,6 +39,11 @@ namespace Client
             _client = new HttpClient(handler) {BaseAddress = configuration.BaseUri()};
         }
 
+        /// <summary>
+        /// Initializes the swish client to use production configuration
+        /// </summary>
+        /// <param name="cert">The client certificate</param>
+        /// <param name="caCert">Optional CA root certificate used to verify server certificate, if not provided, no server certificate validation will be done</param>
         public SwishClient(X509Certificate2 cert, X509Certificate2 caCert = null)
             :this(new ProductionConfig(), cert, caCert)
         { }
@@ -49,8 +55,13 @@ namespace Client
 
         public void MakePayment(Payment payment)
         {
-            var response = Post(payment).Result;
-            var responseContent = response.Content.ReadAsStringAsync().Result;
+            MakePaymentAsync(payment).RunSynchronously();
+        }
+
+        public async Task MakePaymentAsync(Payment payment)
+        {
+            var response = await Post(payment);
+            var responseContent = await response.Content.ReadAsStringAsync();
             if (response.StatusCode == (HttpStatusCode)422)
             {
                 throw new SwishException(responseContent);
