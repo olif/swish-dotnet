@@ -3,6 +3,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Client.UnitTests
@@ -11,12 +12,12 @@ namespace Client.UnitTests
     // To enable this option, right-click on the project and select the Properties menu item. In the Build tab select "Produce outputs on build".
     public class SwishClientTests
     {
-        private readonly Payment _defaultPayment;
+        private readonly PaymentModel _defaultPayment;
         private readonly IConfiguration configuration;
 
         public SwishClientTests()
         {
-            _defaultPayment = new Payment()
+            _defaultPayment = new PaymentModel()
             {
                 Amount = "100",
                 Currency = "SEK",
@@ -32,31 +33,31 @@ namespace Client.UnitTests
         }
 
         [Fact]
-        public void Test()
+        public async Task Test()
         {
             var clientCert = new X509Certificate2("testcertificates/SwishMerchantTestCertificate1231181189.p12", "swish");
             var caCert = new X509Certificate2("testcertificates/TestSwishRootCAv1Test.pem");
             SwishClient client = new SwishClient(configuration, clientCert, caCert);
-            client.MakePayment(_defaultPayment);
+            await client.MakePaymentAsync(_defaultPayment);
         }
 
         [Fact]
-        public void Throws_Swich_Exception_When_Status_Code_Is_422()
+        public async Task Throws_Swich_Exception_When_Status_Code_Is_422()
         {
 
             var errorMsg = "Testing error";
             var mockHttp = MockHttp.WithStatusAndContent(422, errorMsg);
             var client = new SwishClient(mockHttp);
-            var exception = Assert.Throws<SwishException>(() => client.MakePayment(_defaultPayment));
+            var exception = await Assert.ThrowsAsync<SwishException>(() => client.MakePaymentAsync(_defaultPayment));
             Assert.Equal(errorMsg, exception.Message);
         }
 
         [Fact]
-        public void Throws_Http_Exception_For_Not_Ok_Status_Codes()
+        public async Task Throws_Http_Exception_For_Not_Ok_Status_Codes()
         {
             var mockHttp = MockHttp.WithStatus(500);
             var client = new SwishClient(mockHttp);
-            Assert.Throws<HttpRequestException>(() => client.MakePayment(_defaultPayment));
+            await Assert.ThrowsAsync<HttpRequestException>(() => client.MakePaymentAsync(_defaultPayment));
         }
     }
 }

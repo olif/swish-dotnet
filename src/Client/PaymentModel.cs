@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Client
 {
-    public class Payment
+    public class PaymentModel
     {
         public string PayeePaymentReference { get; set; }
 

@@ -53,12 +53,7 @@ namespace Client
             _client = httpClient;
         }
 
-        public void MakePayment(Payment payment)
-        {
-            MakePaymentAsync(payment).RunSynchronously();
-        }
-
-        public async Task MakePaymentAsync(Payment payment)
+        public async Task MakePaymentAsync(PaymentModel payment)
         {
             var response = await Post(payment);
             var responseContent = await response.Content.ReadAsStringAsync();
