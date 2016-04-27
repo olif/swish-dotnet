@@ -14,6 +14,7 @@ namespace Client.UnitTests
     {
         private readonly PaymentModel _defaultPayment;
         private readonly IConfiguration configuration;
+        private readonly RefundModel _defaultRefund;
 
         public SwishClientTests()
         {
@@ -28,6 +29,18 @@ namespace Client.UnitTests
                 Message = "Kingston USB Flash Drive 8 GB"
             };
 
+            _defaultRefund = new RefundModel()
+            {
+                PayerPaymentReference = "0123456789",
+                OriginalPaymentReferences = "6D6CD7406ECE4542A80152D909EF9F6B",
+                CallbackUrl = "https://example.com/api/swishcb/refunds%22",
+                PayerAlias = "4671234768",
+                PayeeAlias = "1231181189",
+                Amount = "100",
+                Currency = "SEK",
+                Message = "Refund for Kingston USB Flash Drive 8 GB"
+            };
+
             configuration = Substitute.For<IConfiguration>();
             configuration.BaseUri().Returns(new Uri("https://mss.swicpc.bankgirot.se"));
         }
@@ -39,6 +52,16 @@ namespace Client.UnitTests
             var caCert = new X509Certificate2("testcertificates/TestSwishRootCAv1Test.pem");
             SwishClient client = new SwishClient(configuration, clientCert, caCert);
             await client.MakePaymentAsync(_defaultPayment);
+        }
+
+        [Fact]
+        public async Task Test2()
+        {
+            var clientCert = new X509Certificate2("testcertificates/SwishMerchantTestCertificate1231181189.p12", "swish");
+            var caCert = new X509Certificate2("testcertificates/TestSwishRootCAv1Test.pem");
+            SwishClient client = new SwishClient(configuration, clientCert, caCert);
+            await client.MakeRefundAsync(_defaultRefund);
+
         }
 
         [Fact]

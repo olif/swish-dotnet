@@ -17,7 +17,7 @@ namespace Client
     {
         private readonly HttpClient _client;
         private const string PaymentPath = "swish-cpcapi/api/v1/paymentrequests/";
-        private const string RefundPath = "swish-cpcapi/api/v1/refundequests/";
+        private const string RefundPath = "swish-cpcapi/api/v1/refunds";
 
         /// <summary>
         /// Default constructor
@@ -59,7 +59,7 @@ namespace Client
         {
             var response = await Post(payment, PaymentPath);
             var responseContent = await response.Content.ReadAsStringAsync();
-            if (response.StatusCode == (HttpStatusCode)422)
+            if (response.StatusCode == (HttpStatusCode) 422)
             {
                 throw new SwishException(responseContent);
             }
@@ -98,13 +98,9 @@ namespace Client
                 (sender, certificate, chain, errors) =>
                 {
                     var x509ChainElement = chain.ChainElements.OfType<X509ChainElement>().LastOrDefault();
-                    if (x509ChainElement != null)
-                    {
-                        var c = x509ChainElement.Certificate;
-                        return c.Equals(caCert);
-                    }
-
-                    return false;
+                    if (x509ChainElement == null) return false;
+                    var c = x509ChainElement.Certificate;
+                    return c.Equals(caCert);
                 };
         }
     }
