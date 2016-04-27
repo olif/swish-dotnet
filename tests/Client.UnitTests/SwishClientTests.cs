@@ -1,9 +1,13 @@
 ﻿using NSubstitute;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Client.UnitTests
@@ -65,9 +69,54 @@ namespace Client.UnitTests
         }
 
         [Fact]
+        public async Task MakePayment_Returns_Location_Header_Values()
+        {
+            string paymentId = "AB23D7406ECE4542A80152D909EF9F6B";
+            string locationHeader = $"https://mss.swicpc.bankgirot.se/swishcpcapi/v1/paymentrequests/{paymentId}";
+            var headerValues = new Dictionary<string, string>() {{"Location", locationHeader}};
+            var responseMessage = Create201HttpJsonResponseMessage(_defaultPayment, headerValues);
+            var client = new SwishClient(MockHttp.WithResponseMessage(responseMessage));
+
+            // Act
+            var response = await client.MakePaymentAsync(_defaultPayment);
+
+            // Assert
+            Assert.Equal(response.Location, locationHeader);
+            Assert.Equal(response.Id, paymentId);
+        }
+
+        [Fact]
+        public async Task MakeRefund_Returns_Location_Header_Values()
+        {
+            string refundId = "ABC2D7406ECE4542A80152D909EF9F6B";
+            string locationHeader = $"https://mss.swicpc.bankgirot.se/swishcpcapi/v1/refunds/{refundId}";
+            var headerValues = new Dictionary<string, string>() { { "Location", locationHeader } };
+            var responseMessage = Create201HttpJsonResponseMessage(_defaultPayment, headerValues);
+            var client = new SwishClient(MockHttp.WithResponseMessage(responseMessage));
+
+            // Act
+            var response = await client.MakeRefundAsync(_defaultRefund);
+
+            // Assert
+            Assert.Equal(response.Location, locationHeader);
+            Assert.Equal(response.Id, refundId);
+        }
+
+        private HttpResponseMessage Create201HttpJsonResponseMessage<T>(T contentModel,
+            Dictionary<string, string> headerValues)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(_defaultPayment), Encoding.UTF8, "application/json");
+            var responseMessage = new HttpResponseMessage(HttpStatusCode.Created) { Content = content };
+            foreach (var header in headerValues)
+            {
+                responseMessage.Headers.Add(header.Key, header.Value);
+            }
+            return responseMessage;
+        }
+
+        [Fact]
         public async Task Throws_Swich_Exception_When_Status_Code_Is_422()
         {
-
             var errorMsg = "Testing error";
             var mockHttp = MockHttp.WithStatusAndContent(422, errorMsg);
             var client = new SwishClient(mockHttp);

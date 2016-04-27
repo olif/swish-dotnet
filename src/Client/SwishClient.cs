@@ -55,7 +55,7 @@ namespace Client
             _client = httpClient;
         }
 
-        public async Task MakePaymentAsync(PaymentModel payment)
+        public async Task<SwishResponse> MakePaymentAsync(PaymentModel payment)
         {
             var response = await Post(payment, PaymentPath);
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -65,9 +65,11 @@ namespace Client
             }
 
             response.EnsureSuccessStatusCode();
+
+            return ExtractSwishResponse(response);
         }
 
-        public async Task MakeRefundAsync(RefundModel refund)
+        public async Task<SwishResponse> MakeRefundAsync(RefundModel refund)
         {
             var response = await Post(refund, RefundPath);
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -77,6 +79,22 @@ namespace Client
             }
 
             response.EnsureSuccessStatusCode();
+
+            return ExtractSwishResponse(response);
+        }
+
+        private SwishResponse ExtractSwishResponse(HttpResponseMessage responseMessage)
+        {
+            var location = responseMessage.Headers.GetValues("Location").FirstOrDefault();
+            var swishResponse = new SwishResponse();
+            if (location != null)
+            {
+                var id = location.Split('/').LastOrDefault();
+                swishResponse.Location = location;
+                swishResponse.Id = id;
+            }
+
+            return swishResponse;
         }
 
         private Task<HttpResponseMessage> Post<T>(T model, string path)
@@ -103,5 +121,12 @@ namespace Client
                     return c.Equals(caCert);
                 };
         }
+    }
+
+    public class SwishResponse
+    {
+        public string Id { get; set; }
+
+        public string Location { get; set; }
     }
 }

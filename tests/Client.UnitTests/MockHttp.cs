@@ -32,6 +32,11 @@ namespace Client.UnitTests
         {
             return new MockHttp(new TestHttpMessageHandler((HttpStatusCode)status));
         }
+
+        public static MockHttp WithResponseMessage(HttpResponseMessage msg)
+        {
+            return new MockHttp(new TestHttpMessageHandler(msg));
+        }
     }
 
     public class TestHttpMessageHandler : HttpMessageHandler
