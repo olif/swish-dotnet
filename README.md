@@ -1,2 +1,1 @@
-# swish-dotnet
-A .Net client for swish payments
+# A .Net Swish client
