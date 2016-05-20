@@ -55,21 +55,46 @@ namespace Client
             _client = httpClient;
         }
 
-        public async Task<SwishResponse> MakePaymentAsync(PaymentModel payment)
+        public async Task<ECommercePaymentResponse> MakeECommercePaymentAsync(PaymentModel payment)
         {
             var response = await Post(payment, PaymentPath);
             var responseContent = await response.Content.ReadAsStringAsync();
-            if (response.StatusCode == (HttpStatusCode) 422)
+            if (response.StatusCode == (HttpStatusCode)422)
             {
                 throw new SwishException(responseContent);
             }
 
             response.EnsureSuccessStatusCode();
 
-            return ExtractSwishResponse(response);
+            return ExtractSwishResponse(response) as ECommercePaymentResponse;
         }
 
-        public async Task<SwishResponse> MakeRefundAsync(RefundModel refund)
+        public async Task<MCommercePaymentResponse> MakeMCommercePaymentAsync(MCommercePaymentModel payment)
+        {
+            var response = await Post(payment, PaymentPath);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            if (response.StatusCode == (HttpStatusCode)422)
+            {
+                throw new SwishException(responseContent);
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            return ExtractMCommerceResponse(response);
+        }
+
+        public async Task<PaymentStatusModel> GetPaymentStatus(string id)
+        {
+            var uri = string.Format("{0}/{1}", PaymentPath, id);
+            var response = await Get(uri);
+            response.EnsureSuccessStatusCode();
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<PaymentStatusModel>(responseContent);
+
+        }
+
+        public async Task<PaymentResponse> MakeRefundAsync(RefundModel refund)
         {
             var response = await Post(refund, RefundPath);
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -83,10 +108,10 @@ namespace Client
             return ExtractSwishResponse(response);
         }
 
-        private SwishResponse ExtractSwishResponse(HttpResponseMessage responseMessage)
+        private PaymentResponse ExtractSwishResponse(HttpResponseMessage responseMessage)
         {
             var location = responseMessage.Headers.GetValues("Location").FirstOrDefault();
-            var swishResponse = new SwishResponse();
+            var swishResponse = new ECommercePaymentResponse();
             if (location != null)
             {
                 var id = location.Split('/').LastOrDefault();
@@ -95,6 +120,19 @@ namespace Client
             }
 
             return swishResponse;
+        }
+
+        private MCommercePaymentResponse ExtractMCommerceResponse(HttpResponseMessage responseMessage)
+        {
+            var token = responseMessage.Headers.GetValues("PaymentRequestToken").FirstOrDefault();
+            var paymentResponse = ExtractSwishResponse(responseMessage);
+
+            return new MCommercePaymentResponse()
+            {
+                Id = paymentResponse.Id,
+                Location = paymentResponse.Location,
+                Token = token
+            };
         }
 
         private Task<HttpResponseMessage> Post<T>(T model, string path)
@@ -110,6 +148,12 @@ namespace Client
             return response;
         }
 
+        private Task<HttpResponseMessage> Get(string path)
+        {
+            var response = _client.GetAsync(path);
+            return response;
+        }
+
         private static void SetupServerCertificateValidation(WebRequestHandler handler, X509Certificate2 caCert)
         {
             handler.ServerCertificateValidationCallback =
@@ -121,9 +165,20 @@ namespace Client
                     return c.Equals(caCert);
                 };
         }
+
+
     }
 
-    public class SwishResponse
+    public class MCommercePaymentResponse : PaymentResponse
+    {
+        public string Token { get; set; }
+    }
+
+    public class ECommercePaymentResponse : PaymentResponse
+    {
+    }
+
+    public class PaymentResponse
     {
         public string Id { get; set; }
 

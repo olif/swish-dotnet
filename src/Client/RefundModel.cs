@@ -9,7 +9,7 @@ namespace Client
     {
         public string PayerPaymentReference { get; set; }
 
-        public string OriginalPaymentReferences { get; set; }
+        public string OriginalPaymentReference { get; set; }
 
         public string PaymentReference { get; set; }
 
