@@ -25,4 +25,9 @@ namespace Client
 
         public string Message { get; set; }
     }
+
+    public class RefundStatusModel : RefundModel
+    {
+        public string Status { get; set; }
+    }
 }

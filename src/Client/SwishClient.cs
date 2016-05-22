@@ -69,6 +69,8 @@ namespace Client
             return ExtractSwishResponse(response) as ECommercePaymentResponse;
         }
 
+
+
         public async Task<MCommercePaymentResponse> MakeMCommercePaymentAsync(MCommercePaymentModel payment)
         {
             var response = await Post(payment, PaymentPath);
@@ -85,7 +87,7 @@ namespace Client
 
         public async Task<PaymentStatusModel> GetPaymentStatus(string id)
         {
-            var uri = string.Format("{0}/{1}", PaymentPath, id);
+            var uri = $"{PaymentPath}/{id}";
             var response = await Get(uri);
             response.EnsureSuccessStatusCode();
 
@@ -106,6 +108,15 @@ namespace Client
             response.EnsureSuccessStatusCode();
 
             return ExtractSwishResponse(response);
+        }
+
+        public async Task<RefundStatusModel> GetRefundStatus(string id)
+        {
+            var uri = $"{RefundPath}/{id}";
+            var response = await Get(uri);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<RefundStatusModel>(responseContent);
         }
 
         private PaymentResponse ExtractSwishResponse(HttpResponseMessage responseMessage)
