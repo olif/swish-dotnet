@@ -28,13 +28,13 @@ namespace Client.IntegrationTests
             var client = new SwishClient(configuration, clientCert, caCert);
 
             // Make payment
-            var ecommercePaymentModel = new ECommercePaymentModel()
+            var ecommercePaymentModel = new ECommercePaymentModel(
+                amount: "100",
+                currency: "SEK",
+                callbackUrl: "https://example.com/api/swishcb/paymentrequests",
+                payerAlias: "1231234567890",
+                payeeAlias: "1231181189")
             {
-                Amount = "100",
-                Currency = "SEK",
-                CallbackUrl = "https://example.com/api/swishcb/paymentrequests",
-                PayerAlias = "1231234567890",
-                PayeeAlias = "1231181189",
                 PayeePaymentReference = "0123456789",
                 Message = "Kingston USB Flash Drive 8 GB"
             };
@@ -49,15 +49,14 @@ namespace Client.IntegrationTests
             Assert.Equal("PAID", paymentStatus.Status);
 
             // Make refund
-            var refundModel = new RefundModel()
+            var refundModel = new RefundModel(
+                originalPaymentReference: paymentStatus.PaymentReference,
+                callbackUrl: "https://example.com/api/swishcb/refunds",
+                payerAlias: "1231181189",
+                amount: "100",
+                currency: "SEK")
             {
                 PayerPaymentReference = "0123456789",
-                OriginalPaymentReference = paymentStatus.PaymentReference,
-                CallbackUrl = "https://example.com/api/swishcb/refunds",
-                PayerAlias = "1231181189",
-                PayeeAlias = "1231234567890",
-                Amount = "100",
-                Currency = "SEK",
                 Message = "Refund for Kingston USB Flash Drive 8 GB"
             };
             var refundResponse = await client.MakeRefundAsync(refundModel);
@@ -78,12 +77,12 @@ namespace Client.IntegrationTests
             var client = new SwishClient(configuration, clientCert, caCert);
 
             // Make payment
-            var mcommercePaymentModel = new MCommercePaymentModel()
+            var mcommercePaymentModel = new MCommercePaymentModel(
+                amount: "100",
+                currency: "SEK",
+                callbackUrl: "https://example.com/api/swishcb/paymentrequests",
+                payeeAlias: "1231181189")
             {
-                Amount = "100",
-                Currency = "SEK",
-                CallbackUrl = "https://example.com/api/swishcb/paymentrequests",
-                PayeeAlias = "1231181189",
                 PayeePaymentReference = "0123456789",
                 Message = "Kingston USB Flash Drive 8 GB"
             };
@@ -98,17 +97,16 @@ namespace Client.IntegrationTests
             Assert.Equal("PAID", paymentStatus.Status);
 
             // Make refund
-            var refundModel = new RefundModel()
+            var refundModel = new RefundModel(
+                originalPaymentReference: paymentStatus.PaymentReference,
+                callbackUrl: "https://example.com/api/swishcb/refunds",
+                payerAlias: "1231181189",
+                amount: "100",
+                currency: "SEK")
             {
                 PayerPaymentReference = "0123456789",
-                OriginalPaymentReference = paymentStatus.PaymentReference,
-                CallbackUrl = "https://example.com/api/swishcb/refunds",
-                PayerAlias = "1231181189",
-                PayeeAlias = "1231234567890",
-                Amount = "100",
-                Currency = "SEK",
                 Message = "Refund for Kingston USB Flash Drive 8 GB"
-            };
+            }; ;
             var refundResponse = await client.MakeRefundAsync(refundModel);
 
             // Wait so that the refund request has been processed

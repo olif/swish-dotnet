@@ -55,7 +55,7 @@ namespace Client
             _client = httpClient;
         }
 
-        public async Task<ECommercePaymentResponse> MakeECommercePaymentAsync(PaymentModel payment)
+        public async Task<ECommercePaymentResponse> MakeECommercePaymentAsync(ECommercePaymentModel payment)
         {
             var response = await Post(payment, PaymentPath);
             var responseContent = await response.Content.ReadAsStringAsync();

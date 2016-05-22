@@ -22,57 +22,36 @@ namespace Client.UnitTests
 
         public SwishClientTests()
         {
-            _defaultECommercePaymentModel = new ECommercePaymentModel()
+            _defaultECommercePaymentModel = new ECommercePaymentModel(amount: "100",
+                callbackUrl: "https://example.com/api/swishcb/paymentrequests",
+                payeeAlias: "1231181189",
+                currency: "SEK",
+                payerAlias: "467012345678")
             {
-                Amount = "100",
-                Currency = "SEK",
-                CallbackUrl = "https://example.com/api/swishcb/paymentrequests",
-                PayerAlias = "467012345678",
-                PayeeAlias = "1231181189",
                 PayeePaymentReference = "0123456789",
                 Message = "Kingston USB Flash Drive 8 GB"
             };
 
-            _defaultMCommercePaymentModel = new MCommercePaymentModel()
+            _defaultMCommercePaymentModel = new MCommercePaymentModel(amount: "100",
+                callbackUrl: "https://example.com/api/swishcb/paymentrequests",
+                payeeAlias: "1231181189",
+                currency: "SEK")
             {
-                Amount = "100",
-                Currency = "SEK",
-                CallbackUrl = "https://example.com/api/swishcb/paymentrequests",
-                PayeeAlias = "1231181189",
                 PayeePaymentReference = "0123456789",
                 Message = "Kingston USB Flash Drive 8 GB"
             };
 
-            _defaultRefund = new RefundModel()
+            _defaultRefund = new RefundModel(
+                originalPaymentReference: "6D6CD7406ECE4542A80152D909EF9F6B",
+                callbackUrl: "https://example.com/api/swishcb/refunds",
+                payerAlias: "1231181189",
+                amount: "100",
+                currency: "SEK")
             {
                 PayerPaymentReference = "0123456789",
-                OriginalPaymentReference = "6D6CD7406ECE4542A80152D909EF9F6B",
-                CallbackUrl = "https://example.com/api/swishcb/refunds%22",
-                PayerAlias = "4671234768",
-                PayeeAlias = "1231181189",
-                Amount = "100",
-                Currency = "SEK",
                 Message = "Refund for Kingston USB Flash Drive 8 GB"
             };
         }
-
-        /*[Fact]
-        public async Task Test()
-        {
-            var clientCert = new X509Certificate2("testcertificates/SwishMerchantTestCertificate1231181189.p12", "swish");
-            var caCert = new X509Certificate2("testcertificates/TestSwishRootCAv1Test.pem");
-            SwishClient client = new SwishClient(configuration, clientCert, caCert);
-            await client.MakePaymentAsync(_defaultPayment);
-        }*/
-
-        /*[Fact]
-        public async Task Test2()
-        {
-            var clientCert = new X509Certificate2("testcertificates/SwishMerchantTestCertificate1231181189.p12", "swish");
-            var caCert = new X509Certificate2("testcertificates/TestSwishRootCAv1Test.pem");
-            SwishClient client = new SwishClient(configuration, clientCert, caCert);
-            await client.MakeRefundAsync(_defaultRefund);
-        }*/
 
         [Fact]
         public async Task MakeECommercePayment_Returns_Location_Header_Values()
