@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Client
+﻿namespace Client
 {
     public class RefundModel
     {
@@ -38,9 +33,10 @@ namespace Client
 
     public class RefundStatusModel : RefundModel
     {
-        public RefundStatusModel(string originalPaymentReference, string callbackUrl, string payerAlias,
-    string amount, string currency) : base(originalPaymentReference, callbackUrl, payerAlias, amount, currency)
-        {}
+        public RefundStatusModel(string originalPaymentReference, string callbackUrl, 
+            string payerAlias, string amount, string currency) 
+            : base(originalPaymentReference, callbackUrl, payerAlias, amount, currency)
+        { }
 
         public string Status { get; set; }
     }
