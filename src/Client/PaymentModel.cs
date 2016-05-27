@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace Client
 {
@@ -8,22 +9,23 @@ namespace Client
 
         public string CallbackUrl { get; protected set; }
 
-        public string PayeeAlias { get; protected set; }
 
         public string Amount { get; protected set; }
 
         public string Currency { get; protected set; }
 
         public string Message { get; set; }
+
+        [JsonProperty]
+        internal string PayeeAlias { get; set; }
     }
 
     public class MCommercePaymentModel : PaymentModel
     {
-        public MCommercePaymentModel(string callbackUrl, string payeeAlias, string amount,
+        public MCommercePaymentModel(string callbackUrl, string amount,
             string currency)
         {
             CallbackUrl = callbackUrl;
-            PayeeAlias = payeeAlias;
             Amount = amount;
             Currency = currency;
         }
@@ -31,11 +33,10 @@ namespace Client
 
     public class ECommercePaymentModel : PaymentModel
     {
-        public ECommercePaymentModel(string callbackUrl, string payeeAlias, string amount,
+        public ECommercePaymentModel(string callbackUrl, string amount,
             string currency, string payerAlias)
         {
             CallbackUrl = callbackUrl;
-            PayeeAlias = payeeAlias;
             Amount = amount;
             Currency = currency;
             PayerAlias = payerAlias;

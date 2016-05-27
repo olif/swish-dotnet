@@ -15,6 +15,7 @@ namespace Client
     public class SwishClient
     {
         private readonly HttpClient _client;
+        private readonly IConfiguration _configuration;
         private const string PaymentPath = "swish-cpcapi/api/v1/paymentrequests/";
         private const string RefundPath = "swish-cpcapi/api/v1/refunds";
 
@@ -34,23 +35,20 @@ namespace Client
             {
                 SetupServerCertificateValidation(handler, caCert);
             }
+
+            _configuration = configuration;
             _client = new HttpClient(handler) { BaseAddress = configuration.BaseUri() };
         }
-
-        /// <summary>
-        /// Initializes the swish client to use production configuration
-        /// </summary>
-        /// <param name="cert">The client certificate</param>
-        /// <param name="caCert">Optional CA root certificate used to verify server certificate, if not provided, no server certificate validation will be done</param>
-        public SwishClient(X509Certificate2 cert, X509Certificate2 caCert = null)
-            : this(new ProductionConfig(), cert, caCert)
-        { }
 
         /// <summary>
         /// Initializes the swish client to use injected httpclient. Primarily used for testing purposes.
         /// </summary>
         /// <param name="httpClient">A HttpClient</param>
-        public SwishClient(HttpClient httpClient) { _client = httpClient; }
+        public SwishClient(IConfiguration configuration, HttpClient httpClient)
+        {
+            _configuration = configuration;
+            _client = httpClient;
+        }
 
         /// <summary>
         /// Makes a swish payment via the e-commerce flow
@@ -59,6 +57,7 @@ namespace Client
         /// <returns>Payment response containing payment status location</returns>
         public async Task<ECommercePaymentResponse> MakeECommercePaymentAsync(ECommercePaymentModel payment)
         {
+            payment.PayeeAlias = _configuration.GetMerchantId();
             var response = await Post(payment, PaymentPath);
             var responseContent = await response.Content.ReadAsStringAsync();
             if (response.StatusCode == (HttpStatusCode)422)
@@ -77,6 +76,7 @@ namespace Client
         /// <returns>Payment response containing payment status location</returns>
         public async Task<MCommercePaymentResponse> MakeMCommercePaymentAsync(MCommercePaymentModel payment)
         {
+            payment.PayeeAlias = _configuration.GetMerchantId();
             var response = await Post(payment, PaymentPath);
             var responseContent = await response.Content.ReadAsStringAsync();
             if (response.StatusCode == (HttpStatusCode)422)

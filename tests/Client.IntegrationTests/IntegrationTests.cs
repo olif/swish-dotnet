@@ -14,8 +14,7 @@ namespace Client.IntegrationTests
         public IntegrationTests()
         {
 
-            configuration = Substitute.For<IConfiguration>();
-            configuration.BaseUri().Returns(new Uri("https://mss.swicpc.bankgirot.se"));
+            configuration = new TestConfig("1231181189");
         }
 
         [Fact]
@@ -30,8 +29,7 @@ namespace Client.IntegrationTests
                 amount: "100",
                 currency: "SEK",
                 callbackUrl: "https://example.com/api/swishcb/paymentrequests",
-                payerAlias: "1231234567890",
-                payeeAlias: "1231181189")
+                payerAlias: "1231234567890")
             {
                 PayeePaymentReference = "0123456789",
                 Message = "Kingston USB Flash Drive 8 GB"
@@ -78,8 +76,7 @@ namespace Client.IntegrationTests
             var mcommercePaymentModel = new MCommercePaymentModel(
                 amount: "100",
                 currency: "SEK",
-                callbackUrl: "https://example.com/api/swishcb/paymentrequests",
-                payeeAlias: "1231181189")
+                callbackUrl: "https://example.com/api/swishcb/paymentrequests")
             {
                 PayeePaymentReference = "0123456789",
                 Message = "Kingston USB Flash Drive 8 GB"
