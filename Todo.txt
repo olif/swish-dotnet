@@ -1,3 +1,1 @@
-Add refund status method
-Refactoring
-Add unit tests for get payment and refund
+Add merchant id to config/configuration
