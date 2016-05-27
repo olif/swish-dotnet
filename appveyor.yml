@@ -16,7 +16,7 @@ install:
 # Called before building.
 before_build:  
   - dnu restore
-  - cd %APPVEYOR_BUILD_FOLDER%\src\Localization.JsonLocalizer
+  - cd %APPVEYOR_BUILD_FOLDER%\src\Client
 
 # Replace default build.
 build: off  
@@ -25,7 +25,7 @@ build_script:
 
 # Called before running tests.
 before_test:  
-  - cd %APPVEYOR_BUILD_FOLDER%\test\Localization.JsonLocalizer.Tests
+  - cd %APPVEYOR_BUILD_FOLDER%\test\Client.UnitTests
 
 # Replace default test.
 test: off  
