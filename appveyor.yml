@@ -1,8 +1,4 @@
 version: 1.0.{build}  
-# For now just the develop branch.
-branches:  
-  only:
-    -develop
 
 # Defines the machine that is used to run build/test/deploy/...
 os: Visual Studio 2015
