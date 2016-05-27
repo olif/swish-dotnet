@@ -28,16 +28,13 @@ namespace Client
         {
             // Only TLS 1.1 works
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
-
             var handler = new WebRequestHandler();
             handler.ClientCertificates.Add(cert);
-
             if (caCert != null)
             {
                 SetupServerCertificateValidation(handler, caCert);
             }
-
-            _client = new HttpClient(handler) {BaseAddress = configuration.BaseUri()};
+            _client = new HttpClient(handler) { BaseAddress = configuration.BaseUri() };
         }
 
         /// <summary>
@@ -46,14 +43,20 @@ namespace Client
         /// <param name="cert">The client certificate</param>
         /// <param name="caCert">Optional CA root certificate used to verify server certificate, if not provided, no server certificate validation will be done</param>
         public SwishClient(X509Certificate2 cert, X509Certificate2 caCert = null)
-            :this(new ProductionConfig(), cert, caCert)
+            : this(new ProductionConfig(), cert, caCert)
         { }
 
-        public SwishClient(HttpClient httpClient)
-        {
-            _client = httpClient;
-        }
+        /// <summary>
+        /// Initializes the swish client to use injected httpclient. Primarily used for testing purposes.
+        /// </summary>
+        /// <param name="httpClient">A HttpClient</param>
+        public SwishClient(HttpClient httpClient) { _client = httpClient; }
 
+        /// <summary>
+        /// Makes a swish payment via the e-commerce flow
+        /// </summary>
+        /// <param name="payment">The payment details</param>
+        /// <returns>Payment response containing payment status location</returns>
         public async Task<ECommercePaymentResponse> MakeECommercePaymentAsync(ECommercePaymentModel payment)
         {
             var response = await Post(payment, PaymentPath);
@@ -62,14 +65,16 @@ namespace Client
             {
                 throw new SwishException(responseContent);
             }
-
             response.EnsureSuccessStatusCode();
 
             return ExtractSwishResponse(response) as ECommercePaymentResponse;
         }
 
-
-
+        /// <summary>
+        /// Make a swish payment via the m-commerce flow
+        /// </summary>
+        /// <param name="payment">The payment details</param>
+        /// <returns>Payment response containing payment status location</returns>
         public async Task<MCommercePaymentResponse> MakeMCommercePaymentAsync(MCommercePaymentModel payment)
         {
             var response = await Post(payment, PaymentPath);
@@ -78,47 +83,59 @@ namespace Client
             {
                 throw new SwishException(responseContent);
             }
-
             response.EnsureSuccessStatusCode();
 
             return ExtractMCommerceResponse(response);
         }
 
+        /// <summary>
+        /// Get the current status of a payment
+        /// </summary>
+        /// <param name="id">The location id</param>
+        /// <returns>The payment status</returns>
         public async Task<PaymentStatusModel> GetPaymentStatus(string id)
         {
             var uri = $"{PaymentPath}/{id}";
             var response = await Get(uri);
             response.EnsureSuccessStatusCode();
-
             var responseContent = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<PaymentStatusModel>(responseContent);
 
+            return JsonConvert.DeserializeObject<PaymentStatusModel>(responseContent);
         }
 
-        public async Task<PaymentResponse> MakeRefundAsync(RefundModel refund)
+        /// <summary>
+        /// Makes a refund request
+        /// </summary>
+        /// <param name="refund">The refund details</param>
+        /// <returns>The refund response containing the location of the refund status</returns>
+        public async Task<SwishApiResponse> MakeRefundAsync(RefundModel refund)
         {
             var response = await Post(refund, RefundPath);
             var responseContent = await response.Content.ReadAsStringAsync();
-            if (response.StatusCode == (HttpStatusCode) 422)
+            if (response.StatusCode == (HttpStatusCode)422)
             {
                 throw new SwishException(responseContent);
             }
-
             response.EnsureSuccessStatusCode();
 
             return ExtractSwishResponse(response);
         }
 
+        /// <summary>
+        /// Get the current status of a refund
+        /// </summary>
+        /// <param name="id">The refund location id</param>
+        /// <returns>The refund status</returns>
         public async Task<RefundStatusModel> GetRefundStatus(string id)
         {
             var uri = $"{RefundPath}/{id}";
             var response = await Get(uri);
-
             var responseContent = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<RefundStatusModel>(responseContent);
         }
 
-        private PaymentResponse ExtractSwishResponse(HttpResponseMessage responseMessage)
+        private SwishApiResponse ExtractSwishResponse(HttpResponseMessage responseMessage)
         {
             var location = responseMessage.Headers.GetValues("Location").FirstOrDefault();
             var swishResponse = new ECommercePaymentResponse();
@@ -158,11 +175,7 @@ namespace Client
             return response;
         }
 
-        private Task<HttpResponseMessage> Get(string path)
-        {
-            var response = _client.GetAsync(path);
-            return response;
-        }
+        private Task<HttpResponseMessage> Get(string path) => _client.GetAsync(path);
 
         private static void SetupServerCertificateValidation(WebRequestHandler handler, X509Certificate2 caCert)
         {
@@ -175,23 +188,5 @@ namespace Client
                     return c.Equals(caCert);
                 };
         }
-
-
-    }
-
-    public class MCommercePaymentResponse : PaymentResponse
-    {
-        public string Token { get; set; }
-    }
-
-    public class ECommercePaymentResponse : PaymentResponse
-    {
-    }
-
-    public class PaymentResponse
-    {
-        public string Id { get; set; }
-
-        public string Location { get; set; }
     }
 }
