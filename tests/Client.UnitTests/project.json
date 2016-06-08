@@ -10,7 +10,7 @@
   },
   "description": "Client.UnitTests Class Library",
   "frameworks": {
-    "net452": {
+    "net451": {
       "imports": [
         "dnxcore50",
         "portable-net451+win8"

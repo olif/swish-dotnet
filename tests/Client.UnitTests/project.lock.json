@@ -2,7 +2,7 @@
   "locked": false,
   "version": 2,
   "targets": {
-    ".NETFramework,Version=v4.5.2": {
+    ".NETFramework,Version=v4.5.1": {
       "dotnet-test-xunit/1.0.0-rc2-build10025": {
         "type": "package",
         "dependencies": {
@@ -988,7 +988,7 @@
       "dotnet-test-xunit >= 1.0.0-rc2-build10025",
       "xunit >= 2.1.0"
     ],
-    ".NETFramework,Version=v4.5.2": []
+    ".NETFramework,Version=v4.5.1": []
   },
   "tools": {},
   "projectFileToolGroups": {}
