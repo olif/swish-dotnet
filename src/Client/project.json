@@ -1,8 +1,8 @@
 {
   "authors": [ "Niklas" ],
   "dependencies": {
-    "Microsoft.AspNet.WebApi.Client": "5.2.3",
-    "Microsoft.Net.Http": "2.2.22"
+    "Microsoft.Net.Http": "2.2.29",
+    "Newtonsoft.Json": "8.0.3"
   },
   "description": "Client Class Library",
   "frameworks": {
