@@ -1,8 +1,7 @@
-﻿using System;
+﻿using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
-using NSubstitute;
 using Xunit;
 
 namespace Client.IntegrationTests
@@ -13,7 +12,6 @@ namespace Client.IntegrationTests
 
         public IntegrationTests()
         {
-
             configuration = new TestConfig("1231181189");
         }
 

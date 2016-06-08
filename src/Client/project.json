@@ -6,11 +6,7 @@
   },
   "description": "Client Class Library",
   "frameworks": {
-    "dnx451": { },
-    "net45":  { } 
+    "net451":  { } 
   },
-  "licenseUrl": "",
-  "projectUrl": "",
-  "tags": [ "" ],
   "version": "1.0.0-*"
 }
