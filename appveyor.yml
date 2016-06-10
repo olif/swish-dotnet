@@ -26,5 +26,3 @@ build_script:
 - cmd: >-
     dotnet pack src\Client --configuration Release --output "artifacts\bin\Client"
 test: off
-test_script:
-- dotnet test tests\Client.UnitTests
