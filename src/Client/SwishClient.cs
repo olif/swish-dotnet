@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,9 +28,9 @@ namespace Client
         /// <param name="caCert">Optional CA root certificate used to verify server certificate, if not provided, no server certificate validation will be done</param>
         public SwishClient(IConfiguration configuration, X509Certificate2 cert, X509Certificate2 caCert = null)
         {
-            // Only TLS 1.1 works
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
-            var handler = new WebRequestHandler();
+            //Only TLS 1.1 works
+            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
+            var handler = new HttpClientHandler();
             handler.ClientCertificates.Add(cert);
             if (caCert != null)
             {
@@ -43,6 +44,7 @@ namespace Client
         /// <summary>
         /// Initializes the swish client to use injected httpclient. Primarily used for testing purposes.
         /// </summary>
+        /// <param name="configuration"></param>
         /// <param name="httpClient">A HttpClient</param>
         public SwishClient(IConfiguration configuration, HttpClient httpClient)
         {
@@ -177,9 +179,9 @@ namespace Client
 
         private Task<HttpResponseMessage> Get(string path) => _client.GetAsync(path);
 
-        private static void SetupServerCertificateValidation(WebRequestHandler handler, X509Certificate2 caCert)
+        private static void SetupServerCertificateValidation(HttpClientHandler handler, X509Certificate2 caCert)
         {
-            handler.ServerCertificateValidationCallback =
+            handler.ServerCertificateCustomValidationCallback =
                 (sender, certificate, chain, errors) =>
                 {
                     var x509ChainElement = chain.ChainElements.OfType<X509ChainElement>().LastOrDefault();

@@ -1,13 +1,14 @@
 # A .Net Swish Client
 
-[![Build status](https://ci.appveyor.com/api/projects/status/xjbl5h0g5ccjhb60/branch/master?svg=true)](https://ci.appveyor.com/project/Olif/swish-dotnet/branch/master)
-
+[![Build status](https://nikolofs.visualstudio.com/_apis/public/build/definitions/7e23ce7e-e7b1-47d3-9159-53e637633209/3/badge)
 
 ---
 
 A .net swish client written in .net core rc2 that targets .net >= 4.5.1.
 
 ## Usage
+
+(Make sure to install any the root certificates to your machine)
 
 ### Initializing the client
     var clientCert = new X509Certificate2("testcertificates/SwishMerchantTestCertificate1231181189.p12", "swish");
