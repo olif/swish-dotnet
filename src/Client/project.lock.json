@@ -2,7 +2,7 @@
   "locked": false,
   "version": 2,
   "targets": {
-    ".NETStandard,Version=v1.3": {
+    ".NETStandard,Version=v1.4": {
       "Microsoft.AspNetCore.Http/1.1.0": {
         "type": "package",
         "dependencies": {
@@ -1063,7 +1063,7 @@
           "System.Security.Cryptography.Primitives": "4.3.0"
         },
         "compile": {
-          "ref/netstandard1.3/System.Security.Cryptography.Algorithms.dll": {}
+          "ref/netstandard1.4/System.Security.Cryptography.Algorithms.dll": {}
         }
       },
       "System.Security.Cryptography.Encoding/4.3.0": {
@@ -1123,7 +1123,7 @@
           "System.Security.Cryptography.Encoding": "4.3.0"
         },
         "compile": {
-          "ref/netstandard1.3/System.Security.Cryptography.X509Certificates.dll": {}
+          "ref/netstandard1.4/System.Security.Cryptography.X509Certificates.dll": {}
         }
       },
       "System.Security.Principal/4.3.0": {
@@ -4855,7 +4855,7 @@
       "Microsoft.AspNetCore.Http >= 1.1.0",
       "Newtonsoft.Json >= 9.0.1"
     ],
-    ".NETStandard,Version=v1.3": []
+    ".NETStandard,Version=v1.4": []
   },
   "tools": {},
   "projectFileToolGroups": {}

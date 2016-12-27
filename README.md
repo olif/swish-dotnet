@@ -1,10 +1,10 @@
 # A .Net Swish Client
 
-[![Build status](https://nikolofs.visualstudio.com/_apis/public/build/definitions/7e23ce7e-e7b1-47d3-9159-53e637633209/3/badge)
+![Build status](https://nikolofs.visualstudio.com/_apis/public/build/definitions/7e23ce7e-e7b1-47d3-9159-53e637633209/3/badge)
 
 ---
 
-A .net swish client written in .net core rc2 that targets .net >= 4.5.1.
+A .net swish client written in .net core 1.0.
 
 ## Usage
 
