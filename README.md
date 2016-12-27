@@ -8,7 +8,7 @@ A .net swish client written in .net core 1.0.
 
 ## Usage
 
-(Make sure to install any the root certificates to your machine)
+(Make sure to install the root certificate to your machine)
 
 ### Initializing the client
     var clientCert = new X509Certificate2("testcertificates/SwishMerchantTestCertificate1231181189.p12", "swish");
