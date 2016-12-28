@@ -37,8 +37,10 @@ Thread.Sleep(5000);
 
 // Check payment request status
 var paymentStatus = await client.GetPaymentStatus(paymentResponse.Id);
+```
 
 ### Making a refund request
+```C#
 // Make refund
 var refundModel = new RefundModel(
     originalPaymentReference: paymentStatus.PaymentReference,
