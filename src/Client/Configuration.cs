@@ -31,7 +31,7 @@ namespace Client
             _merchantId = merchantId;
         }
 
-        public Uri BaseUri() => new Uri("https://mss.swicpc.bankgirot.se");
+        public Uri BaseUri() => new Uri("https://mss.cpc.getswish.net");
 
         public string GetMerchantId() => _merchantId;
     }
