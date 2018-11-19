@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using System;
 using Xunit;
 
 namespace Client.IntegrationTests
@@ -18,7 +19,7 @@ namespace Client.IntegrationTests
         public async Task ECommerceScenario()
         {
             var clientCert = new X509Certificate2("testcertificates/SwishMerchantTestCertificate1231181189.p12", "swish");
-            var caCert = new X509Certificate2("testcertificates/TestSwishRootCAv1Test.pem");
+            var caCert = new X509Certificate2("testcertificates/Swish TLS Root CA.pem");
             var client = new SwishClient(configuration, clientCert, caCert);
 
             // Make payment
@@ -33,6 +34,7 @@ namespace Client.IntegrationTests
             };
 
             var paymentResponse = await client.MakeECommercePaymentAsync(ecommercePaymentModel);
+            Console.WriteLine("Hello");
 
             // Wait so that the payment request has been processed
             Thread.Sleep(5000);
@@ -62,7 +64,7 @@ namespace Client.IntegrationTests
             Assert.Equal("PAID", refundStatus.Status);
         }
 
-        [Fact]
+        //[Fact]
         public async Task MCommerceScenario()
         {
             var clientCert = new X509Certificate2("testcertificates/SwishMerchantTestCertificate1231181189.p12", "swish");

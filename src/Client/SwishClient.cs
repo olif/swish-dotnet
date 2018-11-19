@@ -1,12 +1,14 @@
 ﻿using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Security;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System;
 
 namespace Client
 {
@@ -28,8 +30,6 @@ namespace Client
         /// <param name="caCert">Optional CA root certificate used to verify server certificate, if not provided, no server certificate validation will be done</param>
         public SwishClient(IConfiguration configuration, X509Certificate2 cert, X509Certificate2 caCert = null)
         {
-            //Only TLS 1.1 works
-            //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11;
             var handler = new HttpClientHandler();
             handler.ClientCertificates.Add(cert);
             if (caCert != null)

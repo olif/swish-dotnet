@@ -64,8 +64,8 @@ namespace Client.UnitTests
             var response = await client.MakeECommercePaymentAsync(_defaultECommercePaymentModel);
 
             // Assert
-            Assert.Equal(response.Location, locationHeader);
-            Assert.Equal(response.Id, paymentId);
+            Assert.Equal(locationHeader, response.Location);
+            Assert.Equal(paymentId, response.Id);
         }
 
         [Fact]
@@ -105,9 +105,9 @@ namespace Client.UnitTests
             var response = await client.MakeMCommercePaymentAsync(_defaultMCommercePaymentModel);
 
             // Assert
-            Assert.Equal(response.Location, locationHeader);
-            Assert.Equal(response.Id, paymentId);
-            Assert.Equal(response.Token, "f34DS34lfd0d03fdDselkfd3ffk21");
+            Assert.Equal(locationHeader, response.Location);
+            Assert.Equal(paymentId, response.Id);
+            Assert.Equal("f34DS34lfd0d03fdDselkfd3ffk21", response.Token);
         }
 
         [Fact]
@@ -143,8 +143,8 @@ namespace Client.UnitTests
             var response = await client.MakeRefundAsync(_defaultRefund);
 
             // Assert
-            Assert.Equal(response.Location, locationHeader);
-            Assert.Equal(response.Id, refundId);
+            Assert.Equal(locationHeader, response.Location);
+            Assert.Equal(refundId, response.Id);
         }
 
         private HttpResponseMessage Create201HttpJsonResponseMessage<T>(T contentModel,
